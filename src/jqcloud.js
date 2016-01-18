@@ -158,21 +158,22 @@
       this.createTimeout($.proxy(this.drawWordCloud, this), 10);
 
       // Attach window resize event
+      this.resize = throttle(function() {
+        var new_size = {
+          width: this.$element.width(),
+          height: this.$element.height()
+        };
+
+        if (new_size.width != this.options.width || new_size.height != this.options.height) {
+          this.options.width = new_size.width;
+          this.options.height = new_size.height;
+          this.data.aspect_ratio = this.options.width / this.options.height;
+
+          this.update(this.word_array);
+        }
+      }, 50, this);
       if (this.options.autoResize) {
-        $(window).on('resize', throttle(function() {
-          var new_size = {
-            width: this.$element.width(),
-            height: this.$element.height()
-          };
-
-          if (new_size.width != this.options.width || new_size.height != this.options.height) {
-            this.options.width = new_size.width;
-            this.options.height = new_size.height;
-            this.data.aspect_ratio = this.options.width / this.options.height;
-
-            this.update(this.word_array);
-          }
-        }, 50, this));
+        $(window).on('resize', this.resize);
       }
     },
 
